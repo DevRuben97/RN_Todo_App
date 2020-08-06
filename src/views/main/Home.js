@@ -2,17 +2,16 @@ import React, { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import {
   StyleSheet,
-  Text,
-  View,
-  Button,
-  TextInput,
-  SafeAreaView,
+  View
 } from "react-native";
 
-import FAB from 'react-native-fab';
- 
+import FAB from "react-native-fab";
+
 import TodoList from "../../components/List/TodoList";
-import AddTask from '../../components/AddTask';
+import AddTask from "../../components/AddTask";
+
+//----------DATA---------------------
+import {getList, saveList} from '../../Data/Tasks';
 
 const styles = StyleSheet.create({
   container: {
@@ -20,7 +19,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
-    width: "100%"
+    marginTop: 30,
+    width: "100%",
   },
   textInput: {
     borderWidth: 1,
@@ -31,95 +31,82 @@ const styles = StyleSheet.create({
 
 const Home = () => {
   const [data, setdata] = useState([]);
-  const [isLoading, setLoading]= useState(false);
-  const [openModal, setOpenModal]= useState(false);
-  const [reload, setReload]= useState(false);
+  const [isLoading, setLoading] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [reload, setReload] = useState(false);
+  const [selectedTask, setSelectedTask]= useState(null);
 
   function generateIds() {
     return Math.random() * 1000000;
   }
 
-  function addTask({item, description, priority}) {
+ async function addTask({ item, description, priority }, edit) {
     const array = [...data];
 
-    array.push({
-      id: generateIds(),
-      name: item,
-      description: description,
-      priority: priority,
-      completed: false,
-    });
-    setdata(array);
+    if (!edit){
+      array.push({
+        id: generateIds(),
+        name: item,
+        description: description,
+        priority: priority,
+        completed: false,
+      });
+    }
+    else{
+      array.forEach(editItem=> {
+        if (editItem.id=== edit){
+          editItem.name= item;
+          editItem.description= description;
+          editItem.priority= priority;
+        }
+      })
+    }
+    await saveList(array);
+    setReload(!reload);
   }
 
+  function detailsItem(taskId){
+
+    const selectedTask= data.filter(s=> s.id=== taskId)[0];
+
+    setSelectedTask(selectedTask);
+    setOpenModal(true);
+}
+
   useEffect(() => {
-    function fecth() {
-      setLoading(true)
-      setTimeout(() => {
-        setdata([
-          {
-            id: generateIds(),
-            name: 'Primera tarea',
-            description: "Descripción de la tarea",
-            priority: 0,
-            completed: false,
-          },
-          {
-            id: generateIds(),
-            name: 'Primera tarea',
-            description: "Descripción de la tarea",
-            priority: 0,
-            completed: false,
-          },
-          {
-            id: generateIds(),
-            name: 'Primera tarea',
-            description: "Descripción de la tarea",
-            priority: 0,
-            completed: false,
-          },
-          {
-            id: generateIds(),
-            name: 'Primera tarea',
-            description: "Descripción de la tarea",
-            priority: 0,
-            completed: false,
-          },
-          {
-            id: generateIds(),
-            name: 'Primera tarea',
-            description: "Descripción de la tarea",
-            priority: 0,
-            completed: false,
-          }
-        ]);
-        setLoading(false);
-      }, 3000);
+    async function fecth() {
+      setLoading(true);
+      const list= await getList();
+      setdata(list);
+      setLoading(false);
     }
     fecth();
   }, [reload]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <TodoList 
       items={data} 
       setItems={setdata} 
       loading={isLoading}
+      onSelectItem={(id)=> detailsItem(id)}
       />
       <StatusBar style="auto" />
-      <FAB 
-      buttonColor="#007ACC"
-      iconTextColor="#FFFFFF"
-      onClickAction={()=> setOpenModal(true)}
+      <FAB
+        buttonColor="#007ACC"
+        iconTextColor="#FFFFFF"
+        onClickAction={() => setOpenModal(true)}
       />
       <AddTask
-      open={openModal}
-      addTask={addTask}
-      close={()=> {
-        setOpenModal(false)
-      }}
+        open={openModal}
+        addTask={addTask}
+        close={() => {
+          setOpenModal(false);
+          setSelectedTask(null);
+        }}
+        edit={selectedTask}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 

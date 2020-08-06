@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { View, Modal, Text, TextInput, Button, StyleSheet, Picker } from "react-native";
 
@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 22,
+    marginTop: 22
   },
   content: {
     margin: 20,
@@ -56,12 +56,24 @@ const styles = StyleSheet.create({
   }
 });
 
-const AddTask = ({ open, addTask, close }) => {
+const AddTask = ({ open, addTask, close, edit }) => {
   const [name, setName] = useState("");
   const [descripción, setDescription]= useState('');
   const [priority, setPriority]= useState(1);
 
 
+  useEffect(()=> {
+    if (edit){
+        editValues();
+    }
+  },[edit])
+
+  function editValues(){
+    const {name, description, priority}= edit;
+    setName(name);
+    setDescription(description);
+    setPriority(priority);
+  }
 
   function clearInputs(){
       setName('')
@@ -78,7 +90,7 @@ const AddTask = ({ open, addTask, close }) => {
     >
       <View style={styles.container}>
         <View style={styles.content}>
-        <Text>Agregar Nueva Tarea</Text>
+        <Text>{edit? "Editar Tarea": "Agregar Nueva Tarea"}</Text>
           <View style= {styles.block}>
             <Text>Nombre:</Text>
             <TextInput
@@ -122,13 +134,13 @@ const AddTask = ({ open, addTask, close }) => {
             onPress={() => {
                 addTask({
                     item: name,
-                    descripción: descripción,
+                    description: descripción,
                     priority: priority
-                })
+                },edit? edit.id: null)
                 close();
                 clearInputs()
             }}
-            title={"Agregar Tarea"}
+            title={edit? "Editar Tarea": "Agregar Tarea"}
             style={styles.button}
           />
           </View>

@@ -59,7 +59,7 @@ const itemStyle = StyleSheet.create({
   }
 });
 
-const TodoList = ({ items, setItems, loading }) => {
+const TodoList = ({ items, setItems, loading, onSelectItem }) => {
   function changeState(taskid, actualState) {
     const array = [...items];
 
@@ -89,12 +89,14 @@ const TodoList = ({ items, setItems, loading }) => {
     }])
   }
 
+
+
   function renderItem(item) {
     return (
       <TouchableOpacity
         style={itemStyle.listContainer}
         key={item.id}
-        onLongPress={() => changeState(item.id, item.completed)}
+        onLongPress={() => onSelectItem(item.id)}
       >
         <CheckBox
         checkedCheckBoxColor="#007ACC"

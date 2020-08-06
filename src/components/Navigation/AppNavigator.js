@@ -1,10 +1,11 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
+import Icon from 'react-native-vector-icons/FontAwesome5';
 
 import { routes } from "./Routes";
 
-const Stack = createStackNavigator();
+const Stack = createBottomTabNavigator();
 
 const AppNavigator = () => {
   return (
@@ -15,6 +16,11 @@ const AppNavigator = () => {
             key={index}
             name={item.title}
             component={item.main}
+            options={{
+                tabBarIcon: ()=> {
+                   return <Icon name={item.icon} color="#007ACC" size={32}/>
+                }
+            }}
           ></Stack.Screen>
         ))}
       </Stack.Navigator>
