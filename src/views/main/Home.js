@@ -87,7 +87,10 @@ const Home = () => {
     <View style={styles.container}>
       <TodoList 
       items={data} 
-      setItems={setdata} 
+      setItems={(items)=> {
+        saveList(items);
+        setReload(!reload);
+      }} 
       loading={isLoading}
       onSelectItem={(id)=> detailsItem(id)}
       />
