@@ -8,7 +8,6 @@ import FAB from 'react-native-fab';
 
 //---------------------DATA-------------------------------
 import {getNotesList} from '../Data/Notes'
-import { withNavigation } from 'react-navigation';
 
 
 const styles= StyleSheet.create({
@@ -32,14 +31,17 @@ const Notes= ()=> {
     const [reload, setReload]= useState(false);
     
     useEffect(()=> {
-       async function fetch(){
-            const list=  await getNotesList();
-            setData(list);
-            setFilters(list);
+      const event=  navigation.addListener('focus', ()=> {
+            async function fetch(){
+                const list=  await getNotesList();
+                setData(list);
+                setFilters(list);
+            }
+            fetch();
+        })
 
-        }
-        fetch()
-    },[])
+        return event;
+    },[navigation])
 
     return (
         <View style={styles.container}>

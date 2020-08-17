@@ -1,70 +1,139 @@
-import React, {useState, useEffect, useLayoutEffect} from 'react';
-import {View, Text, Button} from 'react-native'
-import {TextInput, StyleSheet, TouchableOpacity} from 'react-native'
-import {useRoute, useNavigation} from '@react-navigation/native'
-import Icon from 'react-native-vector-icons/FontAwesome5'
+import React, { useState, useEffect, useLayoutEffect } from "react";
+import { View } from "react-native";
+import { TextInput, StyleSheet, Share, Text } from "react-native";
+import { useRoute, useNavigation } from "@react-navigation/native";
+import OptionsMenu from "../OptionsMenu";
+import wordsCount from "words-count";
 //--------------------HELPERS---------------------------
-import {generateIds} from '../../helpers/commonFunctions';
+import { generateIds, getDate } from "../../helpers/commonFunctions";
 
 //------------------------DATA----------------------------
-import {addNewItem} from '../../Data/Notes'
+import { addNewItem, deleteItem, updateItem, getItem } from "../../Data/Notes";
+import { confirmAlert } from "../../helpers/alerts";
 
-const styles= StyleSheet.create({
-    container: {
-        paddingTop: 5,
-        backgroundColor: "#fff",
-        flex: 1, 
-        alignItems: 'center'
-    },
-    textInput: {
-        width: '100%',
-        borderWidth: 1,
-        borderTopWidth: 0,
-        borderLeftWidth: 0,
-        borderRightWidth: 0,
-        borderBottomColor: "black"
+const styles = StyleSheet.create({
+  container: {
+    paddingTop: 5,
+    backgroundColor: "#fff",
+    flex: 1,
+    alignItems: "center",
+  },
+  textInput: {
+    width: "100%",
+    borderWidth: 1,
+    borderTopWidth: 0,
+    borderLeftWidth: 0,
+    borderRightWidth: 0,
+    borderBottomColor: "black",
+  },
+});
+
+const FrmNote = () => {
+  //Navigation:
+  const navigation = useNavigation();
+  const routes = useRoute();
+  //Routes params:
+  const edit = routes.params.edit;
+  const id = routes.params.id;
+
+  //States:
+  const [details, setDetails] = useState("");
+  const [itemDate, setItemDate] = useState(null);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: edit ? "Editar Nota" : "Registro de Nota",
+      headerRight: () => {
+        return (
+          <OptionsMenu
+            options={[
+              {
+                title: "Guardar Cambios",
+                action: save,
+                icon: "check",
+              },
+              {
+                title: "Eliminar",
+                action: deleteNote,
+                icon: "trash-alt",
+                disabled: !edit,
+              },
+              {
+                title: "Compartir",
+                action: share,
+                icon: "share",
+                disabled: details === "",
+              },
+            ]}
+          />
+        );
+      },
+    });
+  });
+
+  useEffect(() => {
+    async function fetch() {
+      if (edit) {
+        const item = await getItem(id);
+        setDetails(item.description);
+        setItemDate(item.date ? item.date : getDate());
+      } else {
+        setItemDate(getDate());
+      }
     }
-})
+    fetch();
+  }, []);
 
-const FrmNote= ()=> {
+  function save() {
+    if (details !== "") {
+      if (!edit) {
+        addNewItem({
+          id: generateIds(),
+          description: details,
+          date: getDate(),
+        });
+      } else {
+        updateItem({
+          id: id,
+          description: details,
+          date: getDate(),
+        });
+      }
 
-
-    const navigation= useNavigation();
-
-    const [details, setDetails]= useState('');
-
-    function save(){
-        if (details!== ''){
-            addNewItem({
-                id: generateIds(),
-                description: details
-            });
-            navigation.goBack();
-        }
+      navigation.goBack();
     }
+  }
 
-    useLayoutEffect(()=> {
-        navigation.setOptions({
-            headerRight: ()=> {             
-                return (
-                    <TouchableOpacity style={{paddingRight: 5}} onPress={save}>
-                        <Icon name="check" size={18}/>
-                    </TouchableOpacity>
-                )
-            }
-        })
-    })
+  async function deleteNote() {
+    const ok = await confirmAlert(
+      "Eliminar Nota",
+      "¿Estas seguro de eliminar esta nota?"
+    );
 
-    return (
-        <View style={styles.container}>
-            <TextInput 
-            style={styles.textInput}
-            multiline
-            onChangeText={(value)=> setDetails(value)}
-            value={details}
-            />
-        </View>
-    )
-}
+    if (ok) {
+      await deleteItem(id);
+      navigation.goBack();
+    }
+  }
+
+  async function share() {
+    Share.share({
+      message: details,
+      title: "Compartir",
+    });
+  }
+
+  return (
+    <View style={styles.container}>
+      <Text>{`${itemDate} | ${wordsCount(details)} Palabras`}</Text>
+      <TextInput
+        style={styles.textInput}
+        multiline
+        onChangeText={(value) => setDetails(value)}
+        value={details}
+      />
+    </View>
+  );
+};
 
 export default FrmNote;

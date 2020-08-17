@@ -9,7 +9,7 @@ import AddTask from "../../components/AddTask";
 
 //--------HELPERS-------------------
 
-import {generateIds} from '../../helpers/commonFunctions';
+import { generateIds } from "../../helpers/commonFunctions";
 
 //----------DATA---------------------
 import { getList, saveList } from "../../Data/Tasks";
@@ -34,11 +34,22 @@ const styles = StyleSheet.create({
 
 const Home = () => {
   const [filtersArray, setFiltersData] = useState([]);
-  const [data, setData]= useState([]);
+  const [data, setData] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [reload, setReload] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
+
+  useEffect(() => {
+    async function fecth() {
+      setLoading(true);
+      const list = await getList();
+      setFiltersData(list);
+      setData(list);
+      setLoading(false);
+    }
+    fecth();
+  }, [reload]);
 
   async function addTask({ item, description, priority }, edit) {
     const array = [...filtersArray];
@@ -67,7 +78,9 @@ const Home = () => {
   function search(input) {
     const array = [...filtersArray];
     if (input !== "") {
-      const filtered = array.filter((s) => s.name.toLowerCase().includes(input.toLowerCase()));
+      const filtered = array.filter((s) =>
+        s.name.toLowerCase().includes(input.toLowerCase())
+      );
       setFiltersData(filtered);
     } else {
       setFiltersData(data);
@@ -80,17 +93,6 @@ const Home = () => {
     setSelectedTask(selectedTask);
     setOpenModal(true);
   }
-
-  useEffect(() => {
-    async function fecth() {
-      setLoading(true);
-      const list = await getList();
-      setFiltersData(list);
-      setData(list);
-      setLoading(false);
-    }
-    fecth();
-  }, [reload]);
 
   return (
     <View style={styles.container}>
