@@ -8,6 +8,8 @@ import { routes } from "./Routes";
 const Stack = createBottomTabNavigator();
 
 const AppNavigator = () => {
+
+
   return (
     <NavigationContainer>
       <Stack.Navigator>

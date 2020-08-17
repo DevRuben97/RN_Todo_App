@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
-import {
-  StyleSheet,
-  View
-} from "react-native";
+import { StyleSheet, View, TextInput } from "react-native";
 
 import FAB from "react-native-fab";
 
 import TodoList from "../../components/List/TodoList";
 import AddTask from "../../components/AddTask";
 
+//--------HELPERS-------------------
+
+import {generateIds} from '../../helpers/commonFunctions';
+
 //----------DATA---------------------
-import {getList, saveList} from '../../Data/Tasks';
+import { getList, saveList } from "../../Data/Tasks";
 
 const styles = StyleSheet.create({
   container: {
@@ -19,31 +20,30 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 30,
+    paddingTop: 5,
     width: "100%",
   },
   textInput: {
+    padding: 5,
+    marginBottom: 5,
     borderWidth: 1,
     borderBottomColor: "black",
-    width: "50%",
+    width: "90%",
   },
 });
 
 const Home = () => {
-  const [data, setdata] = useState([]);
+  const [filtersArray, setFiltersData] = useState([]);
+  const [data, setData]= useState([]);
   const [isLoading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [reload, setReload] = useState(false);
-  const [selectedTask, setSelectedTask]= useState(null);
+  const [selectedTask, setSelectedTask] = useState(null);
 
-  function generateIds() {
-    return Math.random() * 1000000;
-  }
+  async function addTask({ item, description, priority }, edit) {
+    const array = [...filtersArray];
 
- async function addTask({ item, description, priority }, edit) {
-    const array = [...data];
-
-    if (!edit){
+    if (!edit) {
       array.push({
         id: generateIds(),
         name: item,
@@ -51,33 +51,42 @@ const Home = () => {
         priority: priority,
         completed: false,
       });
-    }
-    else{
-      array.forEach(editItem=> {
-        if (editItem.id=== edit){
-          editItem.name= item;
-          editItem.description= description;
-          editItem.priority= priority;
+    } else {
+      array.forEach((editItem) => {
+        if (editItem.id === edit) {
+          editItem.name = item;
+          editItem.description = description;
+          editItem.priority = priority;
         }
-      })
+      });
     }
     await saveList(array);
     setReload(!reload);
   }
 
-  function detailsItem(taskId){
+  function search(input) {
+    const array = [...filtersArray];
+    if (input !== "") {
+      const filtered = array.filter((s) => s.name.toLowerCase().includes(input.toLowerCase()));
+      setFiltersData(filtered);
+    } else {
+      setFiltersData(data);
+    }
+  }
 
-    const selectedTask= data.filter(s=> s.id=== taskId)[0];
+  function detailsItem(taskId) {
+    const selectedTask = filtersArray.filter((s) => s.id === taskId)[0];
 
     setSelectedTask(selectedTask);
     setOpenModal(true);
-}
+  }
 
   useEffect(() => {
     async function fecth() {
       setLoading(true);
-      const list= await getList();
-      setdata(list);
+      const list = await getList();
+      setFiltersData(list);
+      setData(list);
       setLoading(false);
     }
     fecth();
@@ -85,14 +94,22 @@ const Home = () => {
 
   return (
     <View style={styles.container}>
-      <TodoList 
-      items={data} 
-      setItems={(items)=> {
-        saveList(items);
-        setReload(!reload);
-      }} 
-      loading={isLoading}
-      onSelectItem={(id)=> detailsItem(id)}
+      <TextInput
+        style={styles.textInput}
+        placeholder="Buscar por nombre"
+        onChangeText={(value) => search(value)}
+        clearTextOnFocus
+        clearButtonMode="unless-editing"
+        inlineImageLeft=""
+      />
+      <TodoList
+        items={filtersArray}
+        setItems={(items) => {
+          saveList(items);
+          setReload(!reload);
+        }}
+        loading={isLoading}
+        onSelectItem={(id) => detailsItem(id)}
       />
       <StatusBar style="auto" />
       <FAB

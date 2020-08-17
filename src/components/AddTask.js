@@ -99,7 +99,7 @@ const AddTask = ({ open, addTask, close, edit }) => {
         <View style={styles.content}>
           <Text>{edit ? "Editar Tarea" : "Agregar Nueva Tarea"}</Text>
           <View style={styles.block}>
-            <Text>Nombre:</Text>
+            <Text>Nombre: </Text>
             <TextInput
               value={name}
               onChangeText={(value) => setName(value)}
@@ -107,7 +107,7 @@ const AddTask = ({ open, addTask, close, edit }) => {
             />
           </View>
           <View style={styles.block}>
-            <Text>Descripción:</Text>
+            <Text>Descripción: </Text>
             <TextInput
               value={descripción}
               onChangeText={(value) => setDescription(value)}
@@ -115,7 +115,7 @@ const AddTask = ({ open, addTask, close, edit }) => {
             />
           </View>
           <View style={styles.block}>
-            <Text>Prioridad</Text>
+            <Text>Prioridad: </Text>
             <Picker
               style={styles.picker}
               selectedValue={priority}

@@ -1,22 +1,61 @@
-import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, StyleSheet} from 'react-native';
+import NotesList from '../components/Notes/ListNotes';
+import {useNavigation} from '@react-navigation/native'
+
+import FAB from 'react-native-fab';
+
+
+//---------------------DATA-------------------------------
+import {getNotesList} from '../Data/Notes'
+import { withNavigation } from 'react-navigation';
 
 
 const styles= StyleSheet.create({
     container: {
-        flex:1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: "#fff"
+        flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: 5,
+    width: "100%",
     }
 })
 
 
 const Notes= ()=> {
 
+
+    const navigation = useNavigation();
+    const [data, setData]= useState([]);
+    const [filterArray, setFilters]= useState([]);
+    const [reload, setReload]= useState(false);
+    
+    useEffect(()=> {
+       async function fetch(){
+            const list=  await getNotesList();
+            setData(list);
+            setFilters(list);
+
+        }
+        fetch()
+    },[])
+
     return (
         <View style={styles.container}>
-            <Text>Lista de notas</Text>
+            <NotesList 
+             data={filterArray}
+             navigation={navigation}
+            />
+            <FAB
+                buttonColor="#007ACC"
+                iconTextColor="#FFFFFF"
+                onClickAction={()=> {
+                    navigation.navigate('Registro de Notas',{
+                        edit: false,
+                    });
+                }}
+      />
         </View>
     )
 }

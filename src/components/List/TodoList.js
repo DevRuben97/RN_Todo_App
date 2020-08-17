@@ -37,7 +37,7 @@ const itemStyle = StyleSheet.create({
   sectionHeader: {
     backgroundColor: "#007ACC",
     padding: 10,
-    color: "white",
+    color: "#FFF",
     flex:1,
     flexDirection: "row",
     justifyContent: 'space-between'
