@@ -6,6 +6,7 @@ import FAB from "react-native-fab";
 
 import TodoList from "../../components/List/TodoList";
 import AddTask from "../../components/AddTask";
+import Input from '../../components/Input';
 
 //--------HELPERS-------------------
 
@@ -26,7 +27,10 @@ const styles = StyleSheet.create({
   textInput: {
     padding: 5,
     marginBottom: 5,
-    borderWidth: 1,
+    borderBottomWidth: 1,
+    borderTopWidth: 0,
+    borderLeftWidth: 0,
+    borderRightWidth: 0,
     borderBottomColor: "black",
     width: "90%",
   },
@@ -96,14 +100,12 @@ const Home = () => {
 
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.textInput}
-        placeholder="Buscar por nombre"
-        onChangeText={(value) => search(value)}
-        clearTextOnFocus
-        clearButtonMode="unless-editing"
-        inlineImageLeft=""
-      />
+      <View style={{width: "90%"}}>
+        <Input
+          placeHolder="Buscar por nombre"
+          onChangeValue={(value) => search(value)}
+        />
+      </View>
       <TodoList
         items={filtersArray}
         setItems={(items) => {

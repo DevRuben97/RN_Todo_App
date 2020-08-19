@@ -2,6 +2,9 @@ import React, { useState, useEffect, useLayoutEffect } from "react";
 import { View } from "react-native";
 import { TextInput, StyleSheet, Share, Text } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
+
+import Input from '../Input';
+
 import OptionsMenu from "../OptionsMenu";
 import wordsCount from "words-count";
 //--------------------HELPERS---------------------------
@@ -126,10 +129,9 @@ const FrmNote = () => {
   return (
     <View style={styles.container}>
       <Text>{`${itemDate} | ${wordsCount(details)} Palabras`}</Text>
-      <TextInput
-        style={styles.textInput}
+      <Input
         multiline
-        onChangeText={(value) => setDetails(value)}
+        onChangeValue={(value) => setDetails(value)}
         value={details}
       />
     </View>
