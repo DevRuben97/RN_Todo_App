@@ -25,7 +25,22 @@ const styles= StyleSheet.create({
       }
 })
 
-const NotesList= ({data,navigation})=> {
+const NotesList= ({data,onSelect,navigation})=> {
+
+
+
+    function selectItem(item){
+
+        const array= data.forEach(note => {
+            if (note.id=== item.id){
+                note.selected= true;
+            }
+
+            return note;
+        });
+
+        onSelect(array);
+    }
 
 
     function renderItemList(item){
@@ -34,10 +49,11 @@ const NotesList= ({data,navigation})=> {
             <TouchableOpacity
             style={styles.listConteiner}
             key={item.id}
-            onLongPress={()=> navigation.navigate('Registro de Notas', {
+            onPress={()=> navigation.navigate('Registro de Notas', {
                 edit: true,
                 id: item.id
             })}
+            onLongPress={()=> selectItem(item)}
             >
                 <Text 
                 style={styles.item}

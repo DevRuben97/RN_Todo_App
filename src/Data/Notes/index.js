@@ -1,7 +1,7 @@
 import storage from '../index';
 
 
-const NOTES_KEY= "@MyStore:Note"
+const NOTES_KEY= "@Store:Note"
 
 export async function getNotesList(){
 

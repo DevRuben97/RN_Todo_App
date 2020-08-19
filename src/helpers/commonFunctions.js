@@ -9,3 +9,18 @@ export function getDate(){
 
   return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`;
 }
+
+
+export function orderArrayByDate(list){
+
+  let array= Array.from(list);
+
+  array = array.sort((a,b)=> {
+    const dateOne= new Date(a.date);
+    const dateTwo= new Date(b.date);
+
+    return dateTwo > dateOne;
+  })
+
+  return array;
+}

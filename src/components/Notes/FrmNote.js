@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { View } from "react-native";
-import { TextInput, StyleSheet, Share, Text } from "react-native";
+import {  StyleSheet, Share, Text,TouchableHighlight } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 
 import Input from '../Input';
@@ -13,6 +13,7 @@ import { generateIds, getDate } from "../../helpers/commonFunctions";
 //------------------------DATA----------------------------
 import { addNewItem, deleteItem, updateItem, getItem } from "../../Data/Notes";
 import { confirmAlert } from "../../helpers/alerts";
+import Icon  from "react-native-vector-icons/FontAwesome5";
 
 const styles = StyleSheet.create({
   container: {
@@ -43,12 +44,11 @@ const FrmNote = () => {
   const [details, setDetails] = useState("");
   const [itemDate, setItemDate] = useState(null);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      title: edit ? "Editar Nota" : "Registro de Nota",
-      headerRight: () => {
-        return (
-          <OptionsMenu
+
+  function ViewOptions(){
+
+    return edit? (
+        <OptionsMenu
             options={[
               {
                 title: "Guardar Cambios",
@@ -69,9 +69,22 @@ const FrmNote = () => {
               },
             ]}
           />
-        );
-      },
-    });
+    ): (
+        <View style={{ paddingRight: 10 }}>
+            <TouchableHighlight 
+            onPress={save}
+            >
+                <Icon name="check" size={16}/>
+            </TouchableHighlight>
+        </View>
+    )
+  }
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: edit ? "Editar Nota" : "Registro de Nota",
+      headerRight: ViewOptions
+    })
   });
 
   useEffect(() => {
