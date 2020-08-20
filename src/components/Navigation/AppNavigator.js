@@ -19,9 +19,9 @@ const AppNavigator = () => {
             name={item.title}
             component={item.main}
             options={{
-                tabBarIcon: ()=> {
-                   return <Icon name={item.icon} color="#007ACC" size={32}/>
-                }
+                tabBarIcon: ()=> <Icon name={item.icon} color="#007ACC" size={32}/>,
+                headerTitleAlign: 'center'
+
             }}
           ></Stack.Screen>
         ))}

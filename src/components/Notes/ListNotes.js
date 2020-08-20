@@ -18,6 +18,9 @@ const styles= StyleSheet.create({
         fontSize: 12,
         marginTop: 5
     },
+    itemSelected: {
+        backgroundColor: "#005188"
+    },
     item: {
         marginTop: 5,
         padding: 5,
@@ -30,16 +33,14 @@ const NotesList= ({data,onSelect,navigation})=> {
 
 
     function selectItem(item){
+        const copyArray= [...data];
+        console.log(copyArray);
+        const index= copyArray.findIndex(s=> s.id=== item.id);
+        copyArray[index].selected= copyArray[index].selected? false: true;
 
-        const array= data.forEach(note => {
-            if (note.id=== item.id){
-                note.selected= true;
-            }
 
-            return note;
-        });
-
-        onSelect(array);
+        console.log(copyArray);
+        onSelect(copyArray);
     }
 
 
@@ -47,7 +48,7 @@ const NotesList= ({data,onSelect,navigation})=> {
 
         return (
             <TouchableOpacity
-            style={styles.listConteiner}
+            style={item.selected? [styles.listConteiner, styles.itemSelected]: [styles.listConteiner]}
             key={item.id}
             onPress={()=> navigation.navigate('Registro de Notas', {
                 edit: true,
